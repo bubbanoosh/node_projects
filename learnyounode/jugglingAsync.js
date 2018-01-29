@@ -2,6 +2,30 @@
 ## JUGGLING ASYNC (Exercise 9 of 13)
  */
 
+const http = require('http');
+const bufferlist = require('bl');
+
+let urls = []
+for(let i = 2; i < process.argv.length; i++) {
+	urls.push(process.argv[i])
+}
+
+const juggleAsync = (urls) => {
+	if(urls.length > 0) {
+		http.get(urls.shift(), (res) => {
+			res.pipe(bufferlist((err, data) => {
+				if(err) 
+					return console.error(err)
+				console.log(data.toString())
+			}))
+			res.on('end', () => {
+				juggleAsync(urls)
+			})
+		})
+	}
+}
+
+juggleAsync(urls)
 
 /* 
  # LEARN YOU THE NODE.JS FOR MUCH WIN!  
